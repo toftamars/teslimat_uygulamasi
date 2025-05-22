@@ -2,4 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_delivery_plan_user,delivery.plan.user,model_delivery_plan,base.group_user,1,1,1,0
 access_delivery_plan_manager,delivery.plan.manager,model_delivery_plan,stock.group_stock_manager,1,1,1,1
 access_delivery_plan_line_user,delivery.plan.line.user,model_delivery_plan_line,base.group_user,1,1,1,0
-access_delivery_plan_line_manager,delivery.plan.line.manager,model_delivery_plan_line,stock.group_stock_manager,1,1,1,1 
+access_delivery_plan_line_manager,delivery.plan.line.manager,model_delivery_plan_line,stock.group_stock_manager,1,1,1,1
