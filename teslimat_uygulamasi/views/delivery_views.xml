@@ -5,11 +5,15 @@
         <field name="name">delivery.plan.tree</field>
         <field name="model">delivery.plan</field>
         <field name="arch" type="xml">
-            <tree string="Teslimat Planları" decoration-info="state == 'draft'" decoration-success="state == 'done'">
+            <tree decoration-info="state == 'draft'"
+                  decoration-success="state == 'done'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-danger="state == 'cancelled'">
                 <field name="name"/>
                 <field name="date"/>
+                <field name="region"/>
                 <field name="state"/>
-                <field name="sale_order_ids" widget="many2many_tags"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -19,7 +23,7 @@
         <field name="name">delivery.plan.form</field>
         <field name="model">delivery.plan</field>
         <field name="arch" type="xml">
-            <form string="Teslimat Planı">
+            <form>
                 <header>
                     <button name="action_confirm" string="Onayla" type="object" 
                             class="oe_highlight" states="draft"/>
@@ -28,9 +32,13 @@
                     <button name="action_done" string="Tamamlandı" type="object" 
                             class="oe_highlight" states="in_progress"/>
                     <button name="action_cancel" string="İptal Et" type="object" 
-                            states="draft,confirmed"/>
+                            states="draft,confirmed,in_progress"/>
                     <button name="action_draft" string="Taslağa Dön" type="object" 
                             states="cancelled"/>
+                    <button name="action_archive" string="Arşivle" type="object" 
+                            class="oe_highlight" states="done,cancelled"/>
+                    <button name="action_unarchive" string="Arşivden Çıkar" type="object" 
+                            class="oe_highlight" invisible="active"/>
                     <field name="state" widget="statusbar" 
                            statusbar_visible="draft,confirmed,in_progress,done"/>
                 </header>
@@ -43,9 +51,11 @@
                     <group>
                         <group>
                             <field name="date"/>
+                            <field name="region"/>
+                            <field name="max_deliveries"/>
                         </group>
                         <group>
-                            <field name="sale_order_ids" widget="many2many_tags"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -55,9 +65,15 @@
                                     <field name="sale_order_id"/>
                                     <field name="partner_id"/>
                                     <field name="picking_id"/>
-                                    <field name="notes"/>
+                                    <field name="delivery_status"/>
+                                    <field name="estimated_delivery_time"/>
+                                    <field name="actual_delivery_time"/>
+                                    <field name="active" invisible="1"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Satış Siparişleri">
+                            <field name="sale_order_ids" widget="many2many_tags"/>
                         </page>
                         <page string="Notlar">
                             <field name="notes"/>
@@ -78,14 +94,18 @@
         <field name="name">delivery.plan.search</field>
         <field name="model">delivery.plan</field>
         <field name="arch" type="xml">
-            <search string="Teslimat Planları">
+            <search>
                 <field name="name"/>
-                <field name="date"/>
+                <field name="region"/>
                 <filter string="Taslak" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Onaylandı" name="confirmed" domain="[('state','=','confirmed')]"/>
                 <filter string="Teslimatta" name="in_progress" domain="[('state','=','in_progress')]"/>
                 <filter string="Tamamlandı" name="done" domain="[('state','=','done')]"/>
+                <filter string="İptal Edildi" name="cancelled" domain="[('state','=','cancelled')]"/>
+                <separator/>
+                <filter string="Arşivlenmiş" name="inactive" domain="[('active','=',False)]"/>
                 <group expand="0" string="Grupla">
+                    <filter string="Bölge" name="region" context="{'group_by':'region'}"/>
                     <filter string="Durum" name="state" context="{'group_by':'state'}"/>
                     <filter string="Tarih" name="date" context="{'group_by':'date'}"/>
                 </group>
@@ -98,7 +118,7 @@
         <field name="name">Teslimat Planları</field>
         <field name="res_model">delivery.plan</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_delivery_plan_search"/>
+        <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Yeni bir teslimat planı oluşturun
