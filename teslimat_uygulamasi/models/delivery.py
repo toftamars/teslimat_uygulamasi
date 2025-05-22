@@ -9,6 +9,7 @@ class DeliveryPlan(models.Model):
     _name = 'delivery.plan'
     _description = 'Teslimat Planı'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _active_name = 'active'
 
     name = fields.Char(string='Teslimat Referansı', required=True, copy=False, 
                       readonly=True, default=lambda self: _('New'))
@@ -16,7 +17,7 @@ class DeliveryPlan(models.Model):
     region = fields.Selection([
         ('anadolu', 'Anadolu Yakası'),
         ('avrupa', 'Avrupa Yakası')
-    ], string='Bölge', required=True, tracking=True)
+    ], string='Bölge', required=True, tracking=True, default='anadolu')
     
     state = fields.Selection([
         ('draft', 'Taslak'),
@@ -25,6 +26,8 @@ class DeliveryPlan(models.Model):
         ('done', 'Tamamlandı'),
         ('cancelled', 'İptal Edildi')
     ], string='Durum', default='draft', tracking=True)
+    
+    active = fields.Boolean(default=True, help="Arşivlenmiş kayıtları gizle")
     
     max_deliveries = fields.Integer(string='Maksimum Teslimat Sayısı', default=7,
                                   help='Günlük maksimum teslimat sayısı')
@@ -43,6 +46,8 @@ class DeliveryPlan(models.Model):
         for vals in vals_list:
             if vals.get('name', _('New')) == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('delivery.plan') or _('New')
+            if not vals.get('region'):
+                vals['region'] = 'anadolu'
         return super().create(vals_list)
     
     def action_confirm(self):
@@ -67,6 +72,20 @@ class DeliveryPlan(models.Model):
     
     def action_draft(self):
         self.write({'state': 'draft'})
+    
+    def action_archive(self):
+        self.write({'active': False})
+    
+    def action_unarchive(self):
+        self.write({'active': True})
+    
+    def unlink(self):
+        for record in self:
+            if record.state not in ['draft', 'cancelled']:
+                raise UserError(_('Sadece taslak veya iptal edilmiş teslimat planları silinebilir.'))
+            if record.delivery_line_ids:
+                raise UserError(_('Teslimat satırları olan planlar silinemez. Lütfen önce arşivleyin.'))
+        return super().unlink()
     
     def _send_notifications(self, state):
         for line in self.delivery_line_ids:
@@ -93,6 +112,8 @@ class DeliveryPlan(models.Model):
 class DeliveryPlanLine(models.Model):
     _name = 'delivery.plan.line'
     _description = 'Teslimat Planı Satırı'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _active_name = 'active'
 
     delivery_plan_id = fields.Many2one('delivery.plan', string='Teslimat Planı', required=True)
     sale_order_id = fields.Many2one('sale.order', string='Satış Siparişi', required=True)
@@ -115,6 +136,8 @@ class DeliveryPlanLine(models.Model):
     state = fields.Selection(related='delivery_plan_id.state', string='Durum')
     notes = fields.Text(string='Notlar')
     
+    active = fields.Boolean(default=True, help="Arşivlenmiş kayıtları gizle")
+    
     @api.depends('sale_order_id', 'delivery_plan_id')
     def _generate_qr_code(self):
         for record in self:
@@ -136,4 +159,10 @@ class DeliveryPlanLine(models.Model):
         if new_status == 'completed':
             self.write({'actual_delivery_time': fields.Datetime.now()})
             # SMS ve Email bildirimi gönder
-            self.delivery_plan_id._send_notifications('done') 
+            self.delivery_plan_id._send_notifications('done')
+    
+    def action_archive(self):
+        self.write({'active': False})
+    
+    def action_unarchive(self):
+        self.write({'active': True}) 
