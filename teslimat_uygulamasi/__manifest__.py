@@ -20,7 +20,7 @@
     'depends': ['base', 'sale', 'stock', 'point_of_sale', 'mail', 'sms'],
     'data': [
         'security/ir.model.access.csv',
-        'data/delivery_config.py',
+        'data/delivery_config.xml',
         'data/mail_template.xml',
         'views/delivery_views.xml',
         'views/menu_views.xml',

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Anadolu Yakası Teslimat Programı -->
+        <record id="delivery_schedule_anadolu" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">pazartesi</field>
+            <field name="districts">MALTEPE,KARTAL,PENDİK,TUZLA,SULTANBEYLİ</field>
+        </record>
+        <record id="delivery_schedule_anadolu_sali" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">sali</field>
+            <field name="districts">ÜSKÜDAR,KADIKÖY,ÜMRANİYE,ATAŞEHİR</field>
+        </record>
+        <record id="delivery_schedule_anadolu_carsamba" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">carsamba</field>
+            <field name="districts">ÜSKÜDAR,KADIKÖY,ÜMRANİYE,ATAŞEHİR</field>
+        </record>
+        <record id="delivery_schedule_anadolu_persembe" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">persembe</field>
+            <field name="districts">MALTEPE,KARTAL,PENDİK,TUZLA,SULTANBEYLİ</field>
+        </record>
+        <record id="delivery_schedule_anadolu_cuma" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">cuma</field>
+            <field name="districts">ÜSKÜDAR,KADIKÖY,ÜMRANİYE,ATAŞEHİR</field>
+        </record>
+        <record id="delivery_schedule_anadolu_cumartesi" model="delivery.schedule">
+            <field name="region">anadolu</field>
+            <field name="day">cumartesi</field>
+            <field name="districts">BEYKOZ,ÇEKMEKÖY,SANCAKTEPE,ŞİLE</field>
+        </record>
+
+        <!-- Avrupa Yakası Teslimat Programı -->
+        <record id="delivery_schedule_avrupa_pazartesi" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">pazartesi</field>
+            <field name="districts">ŞİŞLİ,BEŞİKTAŞ,BEYOĞLU,KAĞITHANE</field>
+        </record>
+        <record id="delivery_schedule_avrupa_sali" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">sali</field>
+            <field name="districts">SARIYER,EYÜPSULTAN,SULTANGAZİ,GAZİOSMANPAŞA</field>
+        </record>
+        <record id="delivery_schedule_avrupa_carsamba" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">carsamba</field>
+            <field name="districts">BAĞCILAR,BAHÇELİEVLER,BAKIRKÖY,GÜNGÖREN,ESENLER,ZEYTİNBURNU,BAYRAMPAŞA,FATİH</field>
+        </record>
+        <record id="delivery_schedule_avrupa_persembe" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">persembe</field>
+            <field name="districts">BÜYÜKÇEKMECE,SİLİVRİ,ÇATALCA,ARNAVUTKÖY,BAKIRKÖY</field>
+        </record>
+        <record id="delivery_schedule_avrupa_cuma" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">cuma</field>
+            <field name="districts">ŞİŞLİ,BEŞİKTAŞ,BEYOĞLU,KAĞITHANE</field>
+        </record>
+        <record id="delivery_schedule_avrupa_cumartesi" model="delivery.schedule">
+            <field name="region">avrupa</field>
+            <field name="day">cumartesi</field>
+            <field name="districts">BÜYÜKÇEKMECE,SİLİVRİ,ÇATALCA,ARNAVUTKÖY,BAKIRKÖY</field>
+        </record>
+
+        <!-- Günlük Maksimum Teslimat Sayıları -->
+        <record id="max_deliveries_anadolu" model="delivery.limit">
+            <field name="region">anadolu</field>
+            <field name="max_deliveries">7</field>
+        </record>
+        <record id="max_deliveries_avrupa" model="delivery.limit">
+            <field name="region">avrupa</field>
+            <field name="max_deliveries">7</field>
+        </record>
+    </data>
+</odoo> 
