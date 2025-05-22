@@ -3,3 +3,7 @@ access_delivery_plan_user,delivery.plan.user,model_delivery_plan,base.group_user
 access_delivery_plan_manager,delivery.plan.manager,model_delivery_plan,stock.group_stock_manager,1,1,1,1
 access_delivery_plan_line_user,delivery.plan.line.user,model_delivery_plan_line,base.group_user,1,1,1,0
 access_delivery_plan_line_manager,delivery.plan.line.manager,model_delivery_plan_line,stock.group_stock_manager,1,1,1,1
+access_delivery_schedule_user,delivery.schedule.user,model_delivery_schedule,base.group_user,1,0,0,0
+access_delivery_schedule_manager,delivery.schedule.manager,model_delivery_schedule,stock.group_stock_manager,1,1,1,1
+access_delivery_limit_user,delivery.limit.user,model_delivery_limit,base.group_user,1,0,0,0
+access_delivery_limit_manager,delivery.limit.manager,model_delivery_limit,stock.group_stock_manager,1,1,1,1
