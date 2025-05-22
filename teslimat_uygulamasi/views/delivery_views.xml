@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_delivery_plan_tree" model="ir.ui.view">
+        <field name="name">delivery.plan.tree</field>
+        <field name="model">delivery.plan</field>
+        <field name="arch" type="xml">
+            <tree string="Teslimat Planları" decoration-info="state == 'draft'" decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="state"/>
+                <field name="sale_order_ids" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_delivery_plan_form" model="ir.ui.view">
+        <field name="name">delivery.plan.form</field>
+        <field name="model">delivery.plan</field>
+        <field name="arch" type="xml">
+            <form string="Teslimat Planı">
+                <header>
+                    <button name="action_confirm" string="Onayla" type="object" 
+                            class="oe_highlight" states="draft"/>
+                    <button name="action_start_delivery" string="Teslimata Başla" type="object" 
+                            class="oe_highlight" states="confirmed"/>
+                    <button name="action_done" string="Tamamlandı" type="object" 
+                            class="oe_highlight" states="in_progress"/>
+                    <button name="action_cancel" string="İptal Et" type="object" 
+                            states="draft,confirmed"/>
+                    <button name="action_draft" string="Taslağa Dön" type="object" 
+                            states="cancelled"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,confirmed,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="sale_order_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Teslimat Satırları">
+                            <field name="delivery_line_ids">
+                                <tree editable="bottom">
+                                    <field name="sale_order_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="picking_id"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notlar">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_delivery_plan_search" model="ir.ui.view">
+        <field name="name">delivery.plan.search</field>
+        <field name="model">delivery.plan</field>
+        <field name="arch" type="xml">
+            <search string="Teslimat Planları">
+                <field name="name"/>
+                <field name="date"/>
+                <filter string="Taslak" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Onaylandı" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="Teslimatta" name="in_progress" domain="[('state','=','in_progress')]"/>
+                <filter string="Tamamlandı" name="done" domain="[('state','=','done')]"/>
+                <group expand="0" string="Grupla">
+                    <filter string="Durum" name="state" context="{'group_by':'state'}"/>
+                    <filter string="Tarih" name="date" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_delivery_plan" model="ir.actions.act_window">
+        <field name="name">Teslimat Planları</field>
+        <field name="res_model">delivery.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_delivery_plan_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Yeni bir teslimat planı oluşturun
+            </p>
+        </field>
+    </record>
+</odoo> 

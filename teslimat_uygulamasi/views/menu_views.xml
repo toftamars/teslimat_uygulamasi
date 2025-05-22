@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_delivery_root"
+              name="Teslimat"
+              sequence="10"/>
+
+    <!-- Delivery Plans Menu -->
+    <menuitem id="menu_delivery_plan"
+              name="Teslimat Planları"
+              parent="menu_delivery_root"
+              action="action_delivery_plan"
+              sequence="10"/>
+</odoo> 

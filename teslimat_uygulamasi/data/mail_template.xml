@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_delivery_status" model="mail.template">
+            <field name="name">Teslimat Durumu Bildirimi</field>
+            <field name="model_id" ref="model_delivery_plan_line"/>
+            <field name="subject">Teslimat Durumu Güncellemesi - {{ object.sale_order_id.name }}</field>
+            <field name="email_from">{{ user.email_formatted }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Sayın {{ object.partner_id.name }},</p>
+                    <p>
+                        {{ object.sale_order_id.name }} numaralı siparişinizin teslimat durumu güncellenmiştir.
+                    </p>
+                    <p>
+                        <strong>Durum:</strong> 
+                        {% if ctx.get('status') == 'confirmed' %}
+                            Teslimatınız onaylanmıştır.
+                        {% elif ctx.get('status') == 'in_progress' %}
+                            Teslimatınız yoldadır.
+                        {% elif ctx.get('status') == 'done' %}
+                            Teslimatınız tamamlanmıştır.
+                        {% elif ctx.get('status') == 'cancelled' %}
+                            Teslimatınız iptal edilmiştir.
+                        {% endif %}
+                    </p>
+                    <p>
+                        Tahmini Teslimat Zamanı: {{ object.estimated_delivery_time or 'Belirtilmemiş' }}
+                    </p>
+                    <p>
+                        Teslimat detayları için QR kodunuzu kullanabilirsiniz.
+                    </p>
+                    <p>
+                        Saygılarımızla,<br/>
+                        {{ user.company_id.name }}
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo> 
