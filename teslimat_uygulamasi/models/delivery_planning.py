@@ -1,4 +1,6 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+from datetime import datetime, timedelta
 
 class TeslimatPlanlama(models.Model):
     _name = 'teslimat.planlama'
@@ -8,13 +10,20 @@ class TeslimatPlanlama(models.Model):
 
     name = fields.Char(string='Teslimat No', required=True, copy=False, 
                       readonly=True, default=lambda self: ('Yeni'))
-    siparis_no = fields.Char(string='Sipariş No', required=True, tracking=True)
-    musteri = fields.Char(string='Müşteri', required=True, tracking=True)
+    
+    sale_order_id = fields.Many2one('sale.order', string='Satış Siparişi', required=True, tracking=True,
+                                   domain="[('state', 'in', ['sale', 'done'])]")
+    
+    picking_id = fields.Many2one('stock.picking', string='Transfer', required=True, tracking=True,
+                                domain="[('sale_id', '=', sale_order_id)]")
+    
+    musteri = fields.Many2one('res.partner', string='Müşteri', related='sale_order_id.partner_id', store=True)
+    adres = fields.Text(string='Adres', related='picking_id.partner_id.street', store=True)
+    telefon = fields.Char(string='Telefon', related='picking_id.partner_id.phone', store=True)
+    ek_telefon = fields.Char(string='Ek Telefon')
+    
+    ilce = fields.Char(string='İlçe', required=True)
     teslimat_tarihi = fields.Date(string='Teslimat Tarihi', required=True, tracking=True)
-    adres = fields.Text(string='Adres', required=True)
-    telefon = fields.Char(string='Telefon')
-    email = fields.Char(string='E-posta')
-    notlar = fields.Text(string='Notlar')
     
     durum = fields.Selection([
         ('beklemede', 'Beklemede'),
@@ -24,13 +33,49 @@ class TeslimatPlanlama(models.Model):
     ], string='Durum', default='beklemede', tracking=True)
     
     urun_ids = fields.One2many('teslimat.planlama.urun', 'teslimat_id', string='Ürünler')
+    notlar = fields.Text(string='Notlar')
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', ('Yeni')) == ('Yeni'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('teslimat.planlama') or ('Yeni')
+            
+            # Teslimat tarihi kontrolü
+            if vals.get('teslimat_tarihi') and vals.get('ilce'):
+                self._check_delivery_date(vals['teslimat_tarihi'], vals['ilce'])
+                
         return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get('teslimat_tarihi') and vals.get('ilce'):
+            self._check_delivery_date(vals['teslimat_tarihi'], vals['ilce'])
+        return super().write(vals)
+
+    def _check_delivery_date(self, teslimat_tarihi, ilce):
+        # Günlük teslimat limiti kontrolü
+        teslimat_sayisi = self.search_count([
+            ('teslimat_tarihi', '=', teslimat_tarihi),
+            ('ilce', '=', ilce),
+            ('durum', 'not in', ['iptal'])
+        ])
+        
+        # Yönetici kontrolü
+        is_manager = self.env.user.has_group('stock.group_stock_manager')
+        max_delivery = self.env['delivery.limit'].search([('region', '=', ilce)], limit=1)
+        max_delivery_count = max_delivery.max_deliveries if max_delivery else 7
+        
+        if teslimat_sayisi >= max_delivery_count and not is_manager:
+            raise UserError(_('Bu ilçe için günlük teslimat limiti (%s) aşıldı. Lütfen başka bir tarih seçin veya yönetici ile iletişime geçin.') % max_delivery_count)
+        
+        # İlçe kontrolü
+        schedule = self.env['delivery.schedule'].search([
+            ('region', '=', ilce),
+            ('day', '=', teslimat_tarihi.strftime('%A').lower())
+        ])
+        
+        if not schedule and not is_manager:
+            raise UserError(_('Bu ilçe için seçilen günde teslimat yapılamaz. Lütfen başka bir tarih seçin veya yönetici ile iletişime geçin.'))
 
     def action_tamamlandi(self):
         self.write({'durum': 'tamamlandi'})
