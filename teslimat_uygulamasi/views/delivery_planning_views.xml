@@ -7,8 +7,10 @@
         <field name="arch" type="xml">
             <tree string="Teslimat Planlamasi">
                 <field name="name"/>
-                <field name="siparis_no"/>
+                <field name="sale_order_id"/>
+                <field name="picking_id"/>
                 <field name="musteri"/>
+                <field name="ilce"/>
                 <field name="teslimat_tarihi"/>
                 <field name="durum"/>
             </tree>
