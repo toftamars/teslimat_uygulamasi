@@ -1,34 +1,37 @@
 {
-    'name': 'Teslimat Uygulamasi',
+    'name': 'Teslimat Uygulaması',
     'version': '1.0',
     'category': 'Delivery',
     'summary': 'Teslimat planlama ve takip uygulaması',
     'description': """
-        Bu modül teslimat planlaması ve takibi için geliştirilmiştir.
-        Özellikler:
-        * Teslimat planlaması
-        * Teslimat takibi
-        * Rota optimizasyonu
-        * Teslimat raporları
+        Teslimat planlama ve takip uygulaması
+        - Teslimat planlaması
+        - Teslimat takibi
+        - Teslimat ekibi yönetimi
+        - Teslimat raporları
     """,
-    'author': 'Your Company',
-    'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'sale', 'stock', 'point_of_sale'],
+    'author': 'Alper',
+    'website': 'https://www.example.com',
+    'depends': [
+        'base',
+        'mail',
+        'web',
+        'stock',
+        'sale',
+        'hr',
+    ],
     'data': [
         'security/ir.model.access.csv',
         'views/delivery_planning_views.xml',
+        'views/delivery_team_views.xml',
         'views/menu_views.xml',
-        'data/sequence.xml',
     ],
-    'demo': [],
-    'installable': True,
-    'application': True,
-    'auto_install': False,
-    'icon': '/teslimat_uygulamasi/static/description/icon.png',
     'assets': {
         'web.assets_backend': [
             'teslimat_uygulamasi/static/src/css/delivery.css',
         ],
     },
-    'license': 'LGPL-3',
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 } 

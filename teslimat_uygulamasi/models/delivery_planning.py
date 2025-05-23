@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 import logging
 from datetime import datetime, timedelta
 
@@ -808,6 +808,17 @@ class TeslimatPlanlama(models.Model):
             'url': android_url,  # Varsayılan olarak Android URL'sini kullan
             'target': 'new',
         }
+
+    @api.constrains('adres')
+    def _check_teslimat_gunu(self):
+        for record in self:
+            if record.adres and record.adres.city == 'İstanbul' and record.adres.state_id.name == 'Arnavutköy':
+                izin_verilen_gunler = ['Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
+                gun = fields.Date.from_string(record.teslimat_tarihi).isoweekday()
+                gun_adi = self._get_gun_adi(gun)
+                if gun_adi not in izin_verilen_gunler:
+                    raise ValidationError(_('Arnavutköy ilçesi için teslimat günü %s günü yapılamaz. Sadece %s günlerinden birini seçebilirsiniz.') % 
+                        (gun_adi, ', '.join(izin_verilen_gunler)))
 
 class TeslimatPlanlamaUrun(models.Model):
     _name = 'teslimat.planlama.urun'
