@@ -18,7 +18,7 @@ class TeslimatPlanlama(models.Model):
                                 domain="[('sale_id', '=', sale_order_id)]")
     
     musteri = fields.Many2one('res.partner', string='Müşteri', related='sale_order_id.partner_id', store=True)
-    adres = fields.Text(string='Adres', related='picking_id.partner_id.street', store=True)
+    adres = fields.Char(string='Adres', related='picking_id.partner_id.street', store=True)
     telefon = fields.Char(string='Telefon', related='picking_id.partner_id.phone', store=True)
     ek_telefon = fields.Char(string='Ek Telefon')
     
