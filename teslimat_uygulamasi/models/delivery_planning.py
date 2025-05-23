@@ -334,6 +334,57 @@ class TeslimatPlanlama(models.Model):
 
     def action_yolda(self):
         self.write({'durum': 'yolda'})
+        # SMS gönder
+        self._send_delivery_sms()
+
+    def _send_delivery_sms(self):
+        """Teslimat durumu SMS'ini gönder"""
+        if not self.musteri or not self.musteri.mobile:
+            return False
+
+        # SMS içeriğini hazırla
+        message = f"""
+        Sayın {self.musteri.name},
+        Siparişiniz yola çıktı. Tahmini teslimat saatiniz: {self._get_estimated_delivery_time()}
+        Teslimat No: {self.name}
+        İyi günler dileriz.
+        """
+        
+        try:
+            # SMS API'si ile entegrasyon
+            # Örnek: Twilio, Nexmo, Netgsm vb.
+            # self.env['sms.api'].send_sms(self.musteri.mobile, message)
+            
+            # Şimdilik sadece log tutalım
+            _logger.info(f"SMS gönderildi: {self.musteri.mobile} - {message}")
+            
+            # SMS gönderim kaydı
+            self.message_post(
+                body=f"SMS gönderildi: {message}",
+                message_type='comment',
+                subtype_xmlid='mail.mt_comment'
+            )
+            return True
+        except Exception as e:
+            _logger.error(f"SMS gönderilemedi: {str(e)}")
+            return False
+
+    def _get_estimated_delivery_time(self):
+        """Tahmini teslimat saatini hesapla"""
+        if not self.teslimat_baslangic:
+            return "Belirlenemedi"
+            
+        # Varsayılan teslimat süresi (dakika)
+        default_duration = 30
+        
+        # Eğer teslimat süresi belirtilmişse onu kullan
+        duration = self.teslimat_suresi or default_duration
+        
+        # Başlangıç zamanına süreyi ekle
+        delivery_time = self.teslimat_baslangic + timedelta(minutes=duration)
+        
+        # Saati formatla
+        return delivery_time.strftime("%H:%M")
 
     def action_beklemede(self):
         self.write({'durum': 'beklemede'})
