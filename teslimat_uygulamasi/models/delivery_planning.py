@@ -247,31 +247,37 @@ class TeslimatPlanlama(models.Model):
             # Ürünleri transfer belgesinden otomatik olarak ekle
             urunler = []
             for line in self.picking_id.move_lines:
-                urunler.append((0, 0, {
-                    'urun_adi': line.product_id.name,
-                    'miktar': line.product_uom_qty,
-                    'birim': 'adet'
-                }))
+                # Aynı ürünü tekrar eklememek için kontrol et
+                if not any(u[2]['urun_adi'] == line.product_id.name for u in urunler):
+                    urunler.append((0, 0, {
+                        'urun_adi': line.product_id.name,
+                        'miktar': line.product_uom_qty,
+                        'birim': 'adet'
+                    }))
             self.urun_ids = urunler
+
             # Partner ve adres bilgisi
             if self.picking_id.partner_id:
                 self.musteri = self.picking_id.partner_id
-                # Adres Many2one ise, partner_id'nin alt adreslerinden birini seç
-                adres = self.picking_id.partner_id.child_ids.filtered(lambda a: a.type == 'delivery')
-                if adres:
-                    self.adres = adres[0].id
-                    # İlçe bilgisini adresin state_id'sinden al
-                    if adres[0].state_id:
-                        ilce = adres[0].state_id.name.lower()
-                        # Türkçe karakterleri düzelt
+                
+                # Önce teslimat adresini bul
+                delivery_address = self.picking_id.partner_id.child_ids.filtered(
+                    lambda a: a.type == 'delivery' and a.street
+                )
+                
+                if delivery_address:
+                    # Teslimat adresi varsa onu kullan
+                    self.adres = delivery_address[0].id
+                    if delivery_address[0].state_id:
+                        ilce = delivery_address[0].state_id.name.lower()
                         ilce = ilce.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c')
                         if ilce in dict(self._fields['ilce'].selection).keys():
                             self.ilce = ilce
                 else:
-                    self.adres = False
+                    # Teslimat adresi yoksa, partner'ın kendi adresini kullan
+                    self.adres = self.picking_id.partner_id.id
                     if self.picking_id.partner_id.state_id:
                         ilce = self.picking_id.partner_id.state_id.name.lower()
-                        # Türkçe karakterleri düzelt
                         ilce = ilce.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c')
                         if ilce in dict(self._fields['ilce'].selection).keys():
                             self.ilce = ilce
