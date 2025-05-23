@@ -106,7 +106,7 @@
         <field name="arch" type="xml">
             <search string="Teslimat Planlamasi">
                 <field name="name"/>
-                <field name="siparis_no"/>
+                <field name="sale_order_id"/>
                 <field name="musteri"/>
                 <filter string="Beklemede" name="beklemede" domain="[('durum','=','beklemede')]"/>
                 <filter string="Yolda" name="yolda" domain="[('durum','=','yolda')]"/>
