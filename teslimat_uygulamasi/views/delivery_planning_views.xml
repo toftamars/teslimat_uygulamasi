@@ -37,6 +37,7 @@
                     <group>
                         <group>
                             <field name="sale_order_id"/>
+                            <field name="pos_order_id"/>
                             <field name="picking_id"/>
                             <field name="musteri"/>
                             <field name="ilce"/>
@@ -49,9 +50,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Ürünler">
-                            <field name="urun_ids"/>
-                        </page>
                         <page string="Notlar">
                             <field name="notlar"/>
                         </page>
