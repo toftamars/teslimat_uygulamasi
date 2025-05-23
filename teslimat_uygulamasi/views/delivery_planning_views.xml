@@ -22,37 +22,29 @@
         <field name="name">teslimat.planlama.form</field>
         <field name="model">teslimat.planlama</field>
         <field name="arch" type="xml">
-            <form string="Teslimat Planlama">
+            <form string="Teslimat Planlaması">
                 <header>
-                    <button name="action_tamamlandi" string="Tamamlandı" type="object" class="oe_highlight" groups="teslimat_uygulamasi.group_teslimat_ekibi"/>
-                    <button name="action_iptal" string="İptal" type="object" groups="teslimat_uygulamasi.group_teslimat_ekibi"/>
-                    <button name="action_yolda" string="Yolda" type="object" groups="teslimat_uygulamasi.group_teslimat_ekibi"/>
-                    <button name="action_beklemede" string="Beklemede" type="object" groups="teslimat_uygulamasi.group_teslimat_ekibi"/>
-                    <button name="action_haritada_ac" string="Haritada Aç" type="object" class="btn-primary" groups="teslimat_uygulamasi.group_teslimat_ekibi"/>
+                    <button name="action_haritada_ac" string="Haritada Aç" type="object" class="oe_highlight" icon="fa-map-marker"/>
+                    <button name="action_yolda" string="Yolda" type="object" class="btn-primary" states="beklemede"/>
+                    <button name="action_tamamlandi" string="Teslim Edildi" type="object" class="btn-success" states="yolda"/>
+                    <button name="action_iptal" string="İptal" type="object" class="btn-danger" states="beklemede,yolda"/>
                     <field name="durum" widget="statusbar" statusbar_visible="beklemede,yolda,tamamlandi"/>
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_teslimat_raporu" type="object" class="oe_stat_button" icon="fa-file-text-o">
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Rapor</span>
-                            </div>
-                        </button>
-                    </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" readonly="1"/>
+                            <field name="name" placeholder="Teslimat No"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="siparis_turu"/>
-                            <field name="sale_order_id" attrs="{'invisible': [('siparis_turu', '=', 'pos')]}"/>
-                            <field name="pos_order_id" attrs="{'invisible': [('siparis_turu', '=', 'sale')]}"/>
-                            <field name="picking_id" string="Transfer"/>
+                            <field name="sale_order_id" attrs="{'invisible': [('siparis_turu', '=', 'pos')], 'required': [('siparis_turu', '=', 'sale')]}"/>
+                            <field name="pos_order_id" attrs="{'invisible': [('siparis_turu', '=', 'sale')], 'required': [('siparis_turu', '=', 'pos')]}"/>
+                            <field name="picking_id"/>
                             <field name="musteri"/>
-                            <field name="ilce"/>
                             <field name="adres"/>
+                            <field name="ilce"/>
                             <field name="telefon"/>
                             <field name="ek_telefon"/>
                             <field name="teslimat_tarihi"/>
@@ -80,22 +72,6 @@
                                     <field name="notlar"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page string="Teslimat Detayları">
-                            <group>
-                                <field name="teslimat_baslangic"/>
-                                <field name="teslimat_bitis"/>
-                                <field name="teslimat_guncelleme"/>
-                                <field name="teslimat_konum"/>
-                                <field name="teslimat_koordinat"/>
-                            </group>
-                            <group>
-                                <field name="teslimat_resim" widget="image"/>
-                                <field name="teslimat_imza" widget="image"/>
-                                <field name="teslimat_belge" widget="binary"/>
-                                <field name="teslimat_fatura" widget="binary"/>
-                                <field name="teslimat_irsaliye" widget="binary"/>
-                            </group>
                         </page>
                         <page string="Notlar">
                             <field name="notlar"/>

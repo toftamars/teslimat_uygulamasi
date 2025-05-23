@@ -281,10 +281,11 @@ class TeslimatPlanlama(models.Model):
                         ilce = ilce.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c')
                         if ilce in dict(self._fields['ilce'].selection).keys():
                             self.ilce = ilce
-            else:
-                self.musteri = False
-                self.adres = False
-                self.ilce = False
+
+            # Telefon bilgilerini güncelle
+            if self.musteri:
+                self.telefon = self.musteri.phone
+                self.ek_telefon = self.musteri.mobile
 
     @api.onchange('sale_order_id')
     def _onchange_sale_order(self):
