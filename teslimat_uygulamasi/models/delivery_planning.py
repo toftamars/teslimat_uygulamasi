@@ -262,11 +262,19 @@ class TeslimatPlanlama(models.Model):
                     self.adres = adres[0].id
                     # İlçe bilgisini adresin state_id'sinden al
                     if adres[0].state_id:
-                        self.ilce = adres[0].state_id.name.lower()
+                        ilce = adres[0].state_id.name.lower()
+                        # Türkçe karakterleri düzelt
+                        ilce = ilce.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c')
+                        if ilce in dict(self._fields['ilce'].selection).keys():
+                            self.ilce = ilce
                 else:
                     self.adres = False
                     if self.picking_id.partner_id.state_id:
-                        self.ilce = self.picking_id.partner_id.state_id.name.lower()
+                        ilce = self.picking_id.partner_id.state_id.name.lower()
+                        # Türkçe karakterleri düzelt
+                        ilce = ilce.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c')
+                        if ilce in dict(self._fields['ilce'].selection).keys():
+                            self.ilce = ilce
             else:
                 self.musteri = False
                 self.adres = False
