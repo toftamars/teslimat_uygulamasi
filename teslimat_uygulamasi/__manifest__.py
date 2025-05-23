@@ -1,30 +1,34 @@
 {
     'name': 'Teslimat Uygulamasi',
     'version': '1.0',
-    'category': 'Operations/Delivery',
-    'summary': 'Teslimat planlama ve takip uygulamasi',
+    'category': 'Delivery',
+    'summary': 'Teslimat planlama ve takip uygulaması',
     'description': """
-        Bu modul, Odoo ERP sistemi icin teslimat planlama ve takip uygulamasidir.
-        Ozellikler:
-        - Onaylanmis satis siparislerine gore teslimat planlamasi
-        - Transfer olusturma
-        - Teslimat takibi
+        Bu modül teslimat planlaması ve takibi için geliştirilmiştir.
+        Özellikler:
+        * Teslimat planlaması
+        * Teslimat takibi
+        * Rota optimizasyonu
+        * Teslimat raporları
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'sale', 'stock', 'mail'],
+    'depends': ['base', 'sale', 'stock', 'point_of_sale'],
     'data': [
         'security/ir.model.access.csv',
         'views/delivery_planning_views.xml',
         'views/menu_views.xml',
+        'data/sequence.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'teslimat_uygulamasi/static/src/css/style.css',
-        ],
-    },
+    'demo': [],
     'installable': True,
     'application': True,
     'auto_install': False,
-    'icon': 'static/description/Kamyonikon.png',
+    'icon': '/teslimat_uygulamasi/static/description/icon.png',
+    'assets': {
+        'web.assets_backend': [
+            'teslimat_uygulamasi/static/src/css/delivery.css',
+        ],
+    },
+    'license': 'LGPL-3',
 } 
