@@ -26,5 +26,5 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-    'icon': '/teslimat_uygulamasi/static/description/kamyonikon_140x140.png',
+    'icon': 'static/description/kamyonikon_140x140.png',
 } 
