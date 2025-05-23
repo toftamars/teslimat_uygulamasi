@@ -56,7 +56,7 @@
                             <field name="telefon"/>
                             <field name="ek_telefon"/>
                             <field name="teslimat_tarihi"/>
-                            <field name="teslimat_gunu" readonly="1"/>
+                            <field name="teslimat_gunu"/>
                         </group>
                         <group>
                             <field name="teslimat_sira"/>
