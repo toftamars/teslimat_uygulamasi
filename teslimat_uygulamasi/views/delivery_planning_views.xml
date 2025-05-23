@@ -22,8 +22,8 @@
         <field name="arch" type="xml">
             <form string="Teslimat Planlamasi">
                 <header>
-                    <button name="action_tamamlandi" string="Tamamlandı" type="object" class="oe_highlight" attrs="{'invisible': [('durum', 'in', ['tamamlandi', 'iptal'])]}"/>
-                    <button name="action_iptal" string="İptal" type="object" class="btn btn-danger" attrs="{'invisible': [('durum', 'in', ['tamamlandi', 'iptal'])]}"/>
+                    <button name="action_tamamlandi" string="Tamamlandı" type="object" class="oe_highlight" invisible="durum in ['tamamlandi', 'iptal']"/>
+                    <button name="action_iptal" string="İptal" type="object" class="btn btn-danger" invisible="durum in ['tamamlandi', 'iptal']"/>
                     <field name="durum" widget="statusbar" statusbar_visible="beklemede,yolda,tamamlandi"/>
                 </header>
                 <sheet>
