@@ -731,6 +731,33 @@ class TeslimatPlanlama(models.Model):
             }
         }
 
+    def action_haritada_ac(self):
+        self.ensure_one()
+        if not self.adres:
+            raise UserError(_('Teslimat adresi bulunamadı.'))
+            
+        # Adres bilgilerini al
+        street = self.adres.street or ''
+        city = self.adres.city or ''
+        state = self.adres.state_id.name or ''
+        zip_code = self.adres.zip or ''
+        
+        # Adresi URL formatına dönüştür
+        address = f"{street}, {city}, {state} {zip_code}"
+        address = address.replace(' ', '+')
+        
+        # Android ve iOS için farklı URL'ler
+        android_url = f"https://www.google.com/maps/dir/?api=1&destination={address}"
+        ios_url = f"maps://maps.apple.com/?daddr={address}"
+        
+        # Kullanıcının cihaz tipini kontrol et (bu kısmı Odoo'nun mobil uygulaması ile entegre etmek gerekebilir)
+        # Şimdilik her iki URL'yi de döndürelim
+        return {
+            'type': 'ir.actions.act_url',
+            'url': android_url,  # Varsayılan olarak Android URL'sini kullan
+            'target': 'new',
+        }
+
 class TeslimatPlanlamaUrun(models.Model):
     _name = 'teslimat.planlama.urun'
     _description = 'Teslimat Planlama Ürünleri'
