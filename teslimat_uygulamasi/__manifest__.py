@@ -12,7 +12,7 @@
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'sale', 'stock'],
+    'depends': ['base', 'sale', 'stock', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/delivery_planning_views.xml',
