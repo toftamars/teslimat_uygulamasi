@@ -26,5 +26,5 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-    'icon': 'static/description/kamyonikon_140x140.png',
+    'icon': 'static/description/Kamyonikon.png',
 } 
