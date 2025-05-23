@@ -2,7 +2,7 @@
     'name': 'Teslimat Uygulamasi',
     'version': '1.0',
     'category': 'Operations/Delivery',
-    'summary': 'Teslimat planlama ve takip uygulamasidir',
+    'summary': 'Teslimat planlama ve takip uygulamasi',
     'description': """
         Bu modul, Odoo ERP sistemi icin teslimat planlama ve takip uygulamasidir.
         Ozellikler:
@@ -26,5 +26,5 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-    'icon': '/teslimat_uygulamasi/static/description/Kamyonikon.png',
+    'icon': '/teslimat_uygulamasi/static/description/kamyonikon_140x140.png',
 } 
