@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Menu -->
-    <menuitem id="menu_delivery_root"
-              name="Teslimat"
+    <!-- Ana Menü -->
+    <menuitem id="menu_delivery_root" 
+              name="Teslimat" 
               sequence="10"/>
 
-    <!-- Delivery Plans Menu -->
-    <menuitem id="menu_delivery_plan"
-              name="Teslimat Planları"
-              parent="menu_delivery_root"
-              action="action_delivery_plan"
+    <!-- Teslimat Planlama Menüsü -->
+    <menuitem id="menu_delivery_planning" 
+              name="Teslimat Planlaması" 
+              parent="menu_delivery_root" 
+              action="action_delivery_planning" 
               sequence="10"/>
+
+    <!-- Teslimat Takip Menüsü -->
+    <menuitem id="menu_delivery_tracking" 
+              name="Teslimat Takibi" 
+              parent="menu_delivery_root" 
+              action="action_delivery_planning" 
+              sequence="20"/>
 </odoo> 
