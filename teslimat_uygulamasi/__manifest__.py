@@ -1,31 +1,30 @@
 {
-    'name': 'Teslimat Uygulaması',
+    'name': 'Teslimat Uygulamasi',
     'version': '1.0',
-    'category': 'Delivery',
-    'summary': 'Satış siparişlerinden teslimat planlaması',
+    'category': 'Operations/Delivery',
+    'summary': 'Teslimat planlama ve takip uygulamasidir',
     'description': """
-        Bu modül, onaylanmış ve transferleri oluşturulmuş satış siparişlerinden
-        teslimat planlaması yapmanızı sağlar.
-        
-        Özellikler:
-        - Bölge bazlı teslimat planlaması
-        - Günlük maksimum teslimat sayısı kontrolü
-        - Teslimat durumu takibi (Yüklendi, Yolda, Tamamlandı)
-        - SMS ve Email bildirimleri
-        - QR kod ile teslimat onayı
-        - Tahmini teslimat zamanı
+        Bu modul, Odoo ERP sistemi icin teslimat planlama ve takip uygulamasidir.
+        Ozellikler:
+        - Onaylanmis satis siparislerine gore teslimat planlamasi
+        - Transfer olusturma
+        - Teslimat takibi
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'sale', 'stock', 'point_of_sale', 'mail', 'sms'],
+    'depends': ['base', 'sale', 'stock'],
     'data': [
         'security/ir.model.access.csv',
-        'data/delivery_config.xml',
-        'data/mail_template.xml',
-        'views/delivery_views.xml',
+        'views/delivery_planning_views.xml',
         'views/menu_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'teslimat_uygulamasi/static/src/css/style.css',
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,
+    'icon': '/teslimat_uygulamasi/static/description/Kamyonikon.png',
 } 
