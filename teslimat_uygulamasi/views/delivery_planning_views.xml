@@ -49,17 +49,14 @@
                             <field name="siparis_turu"/>
                             <field name="sale_order_id" attrs="{'invisible': [('siparis_turu', '=', 'pos')]}"/>
                             <field name="pos_order_id" attrs="{'invisible': [('siparis_turu', '=', 'sale')]}"/>
-                            <field name="picking_id"/>
+                            <field name="picking_id" string="Transfer"/>
                             <field name="musteri"/>
                             <field name="ilce"/>
                             <field name="adres"/>
                             <field name="telefon"/>
                             <field name="ek_telefon"/>
                             <field name="teslimat_tarihi"/>
-                            <field name="teslimat_gunu" 
-                                   widget="selection"
-                                   options="{'no_create': True}"
-                                   domain="[('id', 'in', [('adres.state_id.name', '!=', 'Arnavutköy') or [1,2,3,4,5,6,7] or [2,3,4,5,6]])]"/>
+                            <field name="teslimat_gunu" readonly="1"/>
                         </group>
                         <group>
                             <field name="teslimat_sira"/>
