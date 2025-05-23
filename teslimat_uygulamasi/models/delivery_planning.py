@@ -5,16 +5,6 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
-# Kullanıcıya teslimat yetki seviyesi ekle
-class ResUsers(models.Model):
-    _inherit = 'res.users'
-    delivery_level = fields.Selection([
-        ('L1', 'L1'),
-        ('L2', 'L2'),
-        ('L3', 'L3'),
-        ('L4', 'L4'),
-    ], string='Teslimat Yetki Seviyesi', default='L1')
-
 class TeslimatPlanlama(models.Model):
     _name = 'teslimat.planlama'
     _description = 'Teslimat Planlaması'
