@@ -36,20 +36,31 @@
                     </div>
                     <group>
                         <group>
-                            <field name="sale_order_id"/>
-                            <field name="pos_order_id"/>
+                            <field name="siparis_turu"/>
+                            <field name="sale_order_id" domain="[('state', 'in', ['sale', 'done'])]" attrs="{'invisible': [('siparis_turu', '=', 'pos')], 'required': [('siparis_turu', '=', 'sale')]}"/>
+                            <field name="pos_order_id" domain="[('state', 'in', ['paid', 'done'])]" attrs="{'invisible': [('siparis_turu', '=', 'sale')], 'required': [('siparis_turu', '=', 'pos')]}"/>
                             <field name="picking_id"/>
                             <field name="musteri"/>
-                            <field name="ilce"/>
-                            <field name="teslimat_tarihi"/>
+                            <field name="adres" domain="[('parent_id', '=', musteri)]"/>
+                            <field name="ilce" widget="selection"/>
+                            <field name="teslimat_tarihi" widget="date" options="{'datepicker': {'daysOfWeekDisabled': [0, 6]}}"/>
                         </group>
                         <group>
-                            <field name="adres"/>
                             <field name="telefon"/>
                             <field name="ek_telefon"/>
                         </group>
                     </group>
                     <notebook>
+                        <page string="Ürünler">
+                            <field name="urun_ids" readonly="1">
+                                <tree>
+                                    <field name="urun_adi"/>
+                                    <field name="miktar"/>
+                                    <field name="birim"/>
+                                    <field name="notlar"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Notlar">
                             <field name="notlar"/>
                         </page>

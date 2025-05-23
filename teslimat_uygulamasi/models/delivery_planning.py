@@ -1,8 +1,19 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
+
+# Kullanıcıya teslimat yetki seviyesi ekle
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+    delivery_level = fields.Selection([
+        ('L1', 'L1'),
+        ('L2', 'L2'),
+        ('L3', 'L3'),
+        ('L4', 'L4'),
+    ], string='Teslimat Yetki Seviyesi', default='L1')
 
 class TeslimatPlanlama(models.Model):
     _name = 'teslimat.planlama'
@@ -10,7 +21,68 @@ class TeslimatPlanlama(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'teslimat_tarihi asc'
 
+    # İlçe-Teslimat Günü Eşleştirmesi
+    ILCE_TESLIMAT_GUNLERI = {
+        'kadikoy': [1, 3, 5],  # Pazartesi, Çarşamba, Cuma
+        'uskudar': [2, 4, 6],  # Salı, Perşembe, Cumartesi
+        'atasehir': [1, 4],    # Pazartesi, Perşembe
+        'umraniye': [2, 5],    # Salı, Cuma
+        'maltepe': [3, 6],     # Çarşamba, Cumartesi
+        'kartal': [1, 4],      # Pazartesi, Perşembe
+        'pendik': [2, 5],      # Salı, Cuma
+        'tuzla': [3, 6],       # Çarşamba, Cumartesi
+        'sultanbeyli': [1, 4], # Pazartesi, Perşembe
+        'sile': [2, 5],        # Salı, Cuma
+        'catalca': [3, 6],     # Çarşamba, Cumartesi
+        'silivri': [1, 4],     # Pazartesi, Perşembe
+        'buyukcekmece': [2, 5],# Salı, Cuma
+        'kucukcekmece': [3, 6],# Çarşamba, Cumartesi
+        'avcilar': [1, 4],     # Pazartesi, Perşembe
+        'bakirkoy': [2, 5],    # Salı, Cuma
+        'bahcelievler': [3, 6],# Çarşamba, Cumartesi
+        'besiktas': [1, 4],    # Pazartesi, Perşembe
+        'beyoglu': [2, 5],     # Salı, Cuma
+        'fatih': [3, 6],       # Çarşamba, Cumartesi
+        'bayrampasa': [1, 4],  # Pazartesi, Perşembe
+        'eyup': [2, 5],        # Salı, Cuma
+        'kagithane': [3, 6],   # Çarşamba, Cumartesi
+        'sisli': [1, 4],       # Pazartesi, Perşembe
+        'sariyer': [2, 5],     # Salı, Cuma
+        'beykoz': [3, 6],      # Çarşamba, Cumartesi
+        'umraniye': [1, 4],    # Pazartesi, Perşembe
+        'uskudar': [2, 5],     # Salı, Cuma
+        'kadikoy': [3, 6],     # Çarşamba, Cumartesi
+        'atasehir': [1, 4],    # Pazartesi, Perşembe
+        'umraniye': [2, 5],    # Salı, Cuma
+        'maltepe': [3, 6],     # Çarşamba, Cumartesi
+        'kartal': [1, 4],      # Pazartesi, Perşembe
+        'pendik': [2, 5],      # Salı, Cuma
+        'tuzla': [3, 6],       # Çarşamba, Cumartesi
+        'sultanbeyli': [1, 4], # Pazartesi, Perşembe
+        'sile': [2, 5],        # Salı, Cuma
+        'catalca': [3, 6],     # Çarşamba, Cumartesi
+        'silivri': [1, 4],     # Pazartesi, Perşembe
+        'buyukcekmece': [2, 5],# Salı, Cuma
+        'kucukcekmece': [3, 6],# Çarşamba, Cumartesi
+        'avcilar': [1, 4],     # Pazartesi, Perşembe
+        'bakirkoy': [2, 5],    # Salı, Cuma
+        'bahcelievler': [3, 6],# Çarşamba, Cumartesi
+        'besiktas': [1, 4],    # Pazartesi, Perşembe
+        'beyoglu': [2, 5],     # Salı, Cuma
+        'fatih': [3, 6],       # Çarşamba, Cumartesi
+        'bayrampasa': [1, 4],  # Pazartesi, Perşembe
+        'eyup': [2, 5],        # Salı, Cuma
+        'kagithane': [3, 6],   # Çarşamba, Cumartesi
+        'sisli': [1, 4],       # Pazartesi, Perşembe
+        'sariyer': [2, 5],     # Salı, Cuma
+        'beykoz': [3, 6],      # Çarşamba, Cumartesi
+    }
+
     name = fields.Char(string='Teslimat No', required=True, copy=False, readonly=True, default=lambda self: _('Yeni'))
+    siparis_turu = fields.Selection([
+        ('sale', 'Satış Siparişi'),
+        ('pos', 'POS Siparişi')
+    ], string='Sipariş Türü', required=True, default='sale')
     sale_order_id = fields.Many2one('sale.order', string='Satış Siparişi', tracking=True)
     pos_order_id = fields.Many2one('pos.order', string='POS Siparişi', tracking=True)
     picking_id = fields.Many2one('stock.picking', string='Sevkiyat', tracking=True)
@@ -55,8 +127,8 @@ class TeslimatPlanlama(models.Model):
         ('uskudar', 'Üsküdar'),
         ('zeytinburnu', 'Zeytinburnu')
     ], string='İlçe', required=True, tracking=True)
-    adres = fields.Char(string='Adres', tracking=True)
-    telefon = fields.Char(string='Telefon', tracking=True)
+    adres = fields.Many2one('res.partner', string='Adres', tracking=True, domain="[('parent_id', '=', musteri)]")
+    telefon = fields.Char(string='Telefon', tracking=True, readonly=True)
     ek_telefon = fields.Char(string='Ek Telefon', tracking=True)
     teslimat_tarihi = fields.Date(string='Teslimat Tarihi', required=True, tracking=True)
     durum = fields.Selection([
@@ -132,16 +204,83 @@ class TeslimatPlanlama(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            self._check_delivery_limits(vals)
             if vals.get('name', _('Yeni')) == _('Yeni'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('teslimat.planlama') or _('Yeni')
         return super().create(vals_list)
 
+    def write(self, vals):
+        self._check_delivery_limits(vals)
+        return super().write(vals)
+
+    def _check_delivery_limits(self, vals):
+        teslimat_tarihi = vals.get('teslimat_tarihi') or self.teslimat_tarihi
+        ilce = vals.get('ilce') or self.ilce
+        # 1. Gün ve ilçe için 7 sınırı (herkes için geçerli)
+        if teslimat_tarihi and ilce:
+            count = self.env['teslimat.planlama'].search_count([
+                ('teslimat_tarihi', '=', teslimat_tarihi),
+                ('ilce', '=', ilce)
+            ])
+            if count >= 7:
+                raise UserError(_('Bu gün ve ilçe için en fazla 7 teslimat oluşturabilirsiniz.'))
+        # 2. İlçe ve gün uygun değilse kimse teslimat oluşturamaz
+        if teslimat_tarihi and ilce:
+            gun = fields.Date.from_string(teslimat_tarihi).isoweekday()
+            uygun_gunler = self.ILCE_TESLIMAT_GUNLERI.get(ilce, [])
+            if gun not in uygun_gunler:
+                raise UserError(_(f'{ilce.title()} ilçesi için {self._get_gun_adi(gun)} günü teslimat yapılamaz.'))
+
+    @api.onchange('siparis_turu')
+    def _onchange_siparis_turu(self):
+        self.sale_order_id = False
+        self.pos_order_id = False
+        self.picking_id = False
+        self.urun_ids = False
+
     @api.onchange('musteri')
     def _onchange_musteri(self):
         if self.musteri:
-            self.adres = self.musteri.street
             self.telefon = self.musteri.phone
             self.ek_telefon = self.musteri.mobile
+            # Adres alanını temizle
+            self.adres = False
+
+    @api.onchange('adres')
+    def _onchange_adres(self):
+        if self.adres:
+            self.ilce = self.adres.state_id.name.lower()
+
+    @api.onchange('picking_id')
+    def _onchange_picking(self):
+        if self.picking_id:
+            # Ürünleri transfer belgesinden otomatik olarak ekle
+            urunler = []
+            for line in self.picking_id.move_lines:
+                urunler.append((0, 0, {
+                    'urun_adi': line.product_id.name,
+                    'miktar': line.product_uom_qty,
+                    'birim': 'adet'
+                }))
+            self.urun_ids = urunler
+            # Partner ve adres bilgisi
+            if self.picking_id.partner_id:
+                self.musteri = self.picking_id.partner_id
+                # Adres Many2one ise, partner_id'nin alt adreslerinden birini seç
+                adres = self.picking_id.partner_id.child_ids.filtered(lambda a: a.type == 'delivery')
+                if adres:
+                    self.adres = adres[0].id
+                    # İlçe bilgisini adresin state_id'sinden al
+                    if adres[0].state_id:
+                        self.ilce = adres[0].state_id.name.lower()
+                else:
+                    self.adres = False
+                    if self.picking_id.partner_id.state_id:
+                        self.ilce = self.picking_id.partner_id.state_id.name.lower()
+            else:
+                self.musteri = False
+                self.adres = False
+                self.ilce = False
 
     @api.onchange('sale_order_id')
     def _onchange_sale_order(self):
@@ -149,12 +288,39 @@ class TeslimatPlanlama(models.Model):
             self.musteri = self.sale_order_id.partner_id
             self.picking_id = self.sale_order_id.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing')[:1]
             self._onchange_musteri()
+            self._onchange_picking()
 
     @api.onchange('pos_order_id')
     def _onchange_pos_order(self):
         if self.pos_order_id:
             self.musteri = self.pos_order_id.partner_id
             self._onchange_musteri()
+
+    @api.onchange('ilce', 'teslimat_tarihi')
+    def _onchange_teslimat_tarihi(self):
+        if self.ilce and self.teslimat_tarihi:
+            gun = self.teslimat_tarihi.isoweekday()
+            teslimat_gunleri = self.ILCE_TESLIMAT_GUNLERI.get(self.ilce, [])
+            if gun not in teslimat_gunleri:
+                self.teslimat_tarihi = False
+                return {
+                    'warning': {
+                        'title': 'Geçersiz Teslimat Günü',
+                        'message': f'{self.ilce.title()} ilçesi için teslimat günü {self._get_gun_adi(gun)} günü yapılamaz. Sadece {", ".join([self._get_gun_adi(g) for g in teslimat_gunleri])} günlerinden birini seçebilirsiniz.'
+                    }
+                }
+
+    def _get_gun_adi(self, gun_no):
+        gunler = {
+            1: 'Pazartesi',
+            2: 'Salı',
+            3: 'Çarşamba',
+            4: 'Perşembe',
+            5: 'Cuma',
+            6: 'Cumartesi',
+            7: 'Pazar'
+        }
+        return gunler.get(gun_no, '')
 
     def action_tamamlandi(self):
         self.write({'durum': 'tamamlandi'})
